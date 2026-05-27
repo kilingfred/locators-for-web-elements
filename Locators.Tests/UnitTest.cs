@@ -69,13 +69,13 @@ namespace Locators.Tests
         }
 
         // Test 1: Careers Ukraine search flow
-        [TestCase("Java", "Ukraine")]
+        [TestCase("Java", "Bulgaria")]
         [TestCase("Python", "Ukraine")]
-        public void CareersUkraine_SearchAndExpand_LastItemContainsSearchText(string language, string country)
+        public void Careers_SearchAndExpand_LastItemContainsSearchText(string language, string country)
         {
             var main = new MainPage(driver).Open();
             var careersPage = main.GoToCareersPage();
-            var careersUa = careersPage.GoToCareersUkrainePage();
+            var careersUa = careersPage.GoToCareersJobsPage();
 
             // Ensure page loaded (Open navigates directly if needed)
             careersUa.Open()

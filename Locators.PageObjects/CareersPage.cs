@@ -30,7 +30,7 @@ namespace Locators.PageObjects
             return this;
         }
 
-        public CareersUkrainePage GoToCareersUkrainePage()
+        public CareersJobsPage GoToCareersJobsPage()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Locators.PageObjects
             {
                 ((IJavaScriptExecutor)webDriver).ExecuteScript("arguments[0].click();", StartYourSearchHereElement);
             }
-            return new CareersUkrainePage(this.webDriver);
+            return new CareersJobsPage(this.webDriver);
         }
     }
 }

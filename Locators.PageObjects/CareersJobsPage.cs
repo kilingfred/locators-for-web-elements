@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace Locators.PageObjects
 {
-    public class CareersUkrainePage
+    public class CareersJobsPage
     {
         private const string URL = "https://careers.epam.com/en/jobs/ukraine";
         private IWebDriver webDriver;
@@ -21,11 +21,16 @@ namespace Locators.PageObjects
         private By lastJobFromListLocator = By.XPath("(//div[contains(@class,'List_list')]/div)[last()]");
         private By expandButtonLocator = By.CssSelector("div.AccordionSection_header__kp8GP svg, div.JobCard_accordionHeader__UXZ0z svg, span > svg");
         private By requirementsLocator = By.TagName("li");
+        private readonly By countryDropdownArrow =
+    By.XPath("//div[@data-testid='country-dropdown']//div[contains(@class,'dropdown__indicator')]");
 
-        public CareersUkrainePage(IWebDriver driver)
+        private readonly By countryOptions =
+            By.CssSelector("div[role='option']");
+
+        public CareersJobsPage(IWebDriver driver)
         {
             this.webDriver = driver;
-            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(3));
+            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
         // Native Selenium 4 Waits for Elements
@@ -35,13 +40,18 @@ namespace Locators.PageObjects
 
         private string SearchText { get; set; }
 
-        public CareersUkrainePage Open()
+        public CareersJobsPage Open()
         {
             webDriver.Navigate().GoToUrl(URL);
+
+            Thread.Sleep(2000);
+
+            AcceptCookies();
+
             return this;
         }
 
-        public CareersUkrainePage InputSearchText(string searchText)
+        public CareersJobsPage InputSearchText(string searchText)
         {
             var el = this.SearchInputElement;
 
@@ -75,50 +85,56 @@ namespace Locators.PageObjects
             return this;
         }
 
-        public CareersUkrainePage SelectCountryFromTheDropdownList(string country)
+        public CareersJobsPage SelectCountryFromTheDropdownList(string country)
         {
-            var input = CountryDropdownInputElement;
-            try { input.Click(); } catch { }
-            try { input.Clear(); } catch { }
-
-            // Primary attempt: send keys normally
-            try
+            var input = webDriverWait.Until(d =>
             {
-                input.SendKeys(country);
-            }
-            catch (Exception)
-            {
-                // Fallback: set value via JS and trigger input event for React
                 try
                 {
-                    ((IJavaScriptExecutor)webDriver).ExecuteScript(
-                        "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));",
-                        input, country);
+                    var el = d.FindElement(
+                        By.XPath("//div[@data-testid='country-dropdown']//input")
+                    );
+
+                    return (el.Displayed && el.Enabled)
+                        ? el
+                        : null;
                 }
-                catch { }
-            }
+                catch
+                {
+                    return null;
+                }
+            });
 
-            // Try to explicitly open the dropdown via keyboard and click
-            try { input.Click(); } catch { }
-            try { input.SendKeys(Keys.ArrowDown); } catch { }
-            try { ((IJavaScriptExecutor)webDriver).ExecuteScript("arguments[0].dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'}));", input); } catch { }
+            input.Click();
 
-            var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
-            wait.Until(d => d.FindElements(dropdownListLocator).Count > 0);
+            Thread.Sleep(500);
 
-            var options = webDriver.FindElements(dropdownListLocator);
-            var match = options.FirstOrDefault(e => !string.IsNullOrEmpty(e.Text) && e.Text.IndexOf(country, StringComparison.OrdinalIgnoreCase) >= 0);
+            // just type
+            input.SendKeys(country);
 
-            if (match == null)
+            Thread.Sleep(1000);
+
+            var option = webDriverWait.Until(d =>
             {
-                throw new InvalidOperationException($"Country option '{country}' not found in dropdown. Available: {string.Join(", ", options.Select(o => o.Text))}");
-            }
+                return d.FindElements(By.XPath("//div[@role='option']"))
+                    .FirstOrDefault(x =>
+                        x.Text.Trim().Contains(
+                            country,
+                            StringComparison.OrdinalIgnoreCase));
+            });
 
-            match.Click();
+            if (option == null)
+                throw new Exception($"Country '{country}' not found");
+
+            ((IJavaScriptExecutor)webDriver)
+                .ExecuteScript("arguments[0].click();", option);
+
+            Thread.Sleep(2000);
+
             return this;
         }
 
-        public CareersUkrainePage SelectRemote()
+        public CareersJobsPage SelectRemote()
         {
             By remoteLabelLocator = By.CssSelector("label[for^='checkbox-vacancy_type-Remote']");
 
@@ -179,7 +195,7 @@ namespace Locators.PageObjects
             return this;
         }
 
-        public CareersUkrainePage ExpandLastJobFromList()
+        public CareersJobsPage ExpandLastJobFromList()
         {
             // Close cookie/consent banner if it overlays the page
             try
@@ -251,6 +267,25 @@ namespace Locators.PageObjects
                 }
             }
             return textFound;
+        }
+
+    private void AcceptCookies()
+        {
+            try
+            {
+                var acceptButton = webDriver.FindElement(
+                    By.XPath("//button[contains(.,'ACCEPT')]")
+                );
+
+                ((IJavaScriptExecutor)webDriver)
+                    .ExecuteScript("arguments[0].click();", acceptButton);
+
+                Thread.Sleep(1000);
+            }
+            catch
+            {
+                // already closed
+            }
         }
     }
 }
