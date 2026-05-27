@@ -4,15 +4,17 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Base.Utils;
 
 namespace Locators.PageObjects
 {
     public class FooterPage
     {
-        private IWebDriver driver;
-        private WebDriverWait wait;
+        private readonly string URL = "https://www.epam.com/";
+        private readonly IWebDriver driver;
+        private readonly WebDriverWait wait;
 
-        private By footerLocator = By.TagName("footer");
+        private readonly By footerLocator = By.TagName("footer");
 
         public FooterPage(IWebDriver driver)
         {
@@ -22,7 +24,7 @@ namespace Locators.PageObjects
 
         public FooterPage OpenHomePage()
         {
-            driver.Navigate().GoToUrl("https://www.epam.com/");
+            driver.Navigate().GoToUrl(URL);
             return this;
         }
 
@@ -30,7 +32,6 @@ namespace Locators.PageObjects
         {
             wait.Until(d => d.FindElements(footerLocator).Count > 0);
             var footer = driver.FindElements(footerLocator).FirstOrDefault();
-            if (footer == null) return null;
 
             // Try several strategies
             var candidates = new By[] {
@@ -57,7 +58,8 @@ namespace Locators.PageObjects
             }
             catch { }
 
-            return null;
+            Logger.Warn("Code of conduct link not found in footer");
+                        return null;
         }
 
         public void ScrollToFooter()
@@ -108,6 +110,7 @@ namespace Locators.PageObjects
             }
             catch
             {
+                Logger.Warn("Direct click failed on link, falling back to JS click");
                 ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", link);
             }
         }

@@ -32,7 +32,15 @@ namespace Locators.PageObjects
 
         public bool checkIfEachArticleHasQueryText()
         {
-            return SearchResultsElement.FindElements(By.TagName("a")).All(e => e.Text.Contains(queryText));
+            try
+            {
+                return SearchResultsElement.FindElements(By.TagName("a")).All(e => e.Text.Contains(queryText));
+            }
+            catch (Exception ex)
+            {
+                Base.Utils.Logger.Error("Error while checking search results", ex);
+                throw;
+            }
         }
     }
 }

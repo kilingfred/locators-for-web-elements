@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="appsettings.json" />
+  </Folder>
   <Project Path="Base/Base.csproj" Id="d50cc8bd-d74d-4c03-b9f3-4e05944fca46" />
   <Project Path="Locators.PageObjects/Locators.PageObjects.csproj" Id="315f8a87-e9b9-405c-bc7c-05de149a292c" />
   <Project Path="Locators.Tests/Locators.Tests.csproj" />

@@ -8,17 +8,25 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Base.Utils;
 
 namespace Locators.Tests
 {
     public class Tests
     {
+        private IDriverFactory driverFactory;
         private IWebDriver driver;
 
         [SetUp]
         public void Setup()
         {
-            driver = Driver.GetDriver();
+            // Clear log file before each test run to keep logs short and per-test
+            Logger.Clear();
+
+            // create or reuse driver via DriverSingleton; factory selection is handled in Base
+            driver = DriverSingleton.GetDriver();
+            driverFactory = null; // not used when singleton chooses factory
+            Logger.Info("WebDriver instance created");
         }
 
         [TearDown]
@@ -28,18 +36,34 @@ namespace Locators.Tests
             {
                 try
                 {
-                    // 1. Close all windows and end session
-                    driver.Quit();
+                    try
+                    {
+                        driver.Quit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Error during driver.Quit(): {ex.Message}", ex);
+                    }
+
+                    try
+                    {
+                        driver.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"Error during driver.Dispose(): {ex.Message}", ex);
+                    }
+
+                    DriverSingleton.CloseAndClear();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error during driver.Quit(): {ex.Message}");
+                    Logger.Error($"Error during DriverSingleton.CloseAndClear(): {ex.Message}", ex);
                 }
                 finally
                 {
-                    // 2. Ensure disposal regardless of Quit success
-                    driver.Dispose();
                     driver = null;
+                    driverFactory = null;
                 }
             }
         }
@@ -75,7 +99,6 @@ namespace Locators.Tests
                 .InputToSearchField(query)
                 .ClickSearch();
 
-            // Ensure results page is loaded with the query
             searchPage.Open();
 
             Assert.That(searchPage.checkIfEachArticleHasQueryText(), NUnit.Framework.Is.True, $"Not every result contains '{query}'");
@@ -104,8 +127,9 @@ namespace Locators.Tests
         {
             string expectedFileName = "Code-Of-Conduct_01_26.pdf";
 
-            // Assume Driver exposes the download path used during initialization
-            string expectedFilePath = Path.Combine(Driver.DownloadDirectory, expectedFileName);
+            // Get download path from singleton factory used to create the driver
+            string downloadDirectory = DriverSingleton.DownloadDirectory;
+            string expectedFilePath = Path.Combine(downloadDirectory, expectedFileName);
 
             var footer = new FooterPage(driver).OpenHomePage();
             footer.ScrollToFooter();
@@ -115,7 +139,5 @@ namespace Locators.Tests
             bool isDownloaded = Base.Utils.FileHelper.WaitForFileCreatedAndStable(expectedFilePath, TimeSpan.FromSeconds(60));
             Assert.That(isDownloaded, Is.True, $"Expected file '{expectedFileName}' was not downloaded to '{expectedFilePath}'");
         }
-
-
     }
 }

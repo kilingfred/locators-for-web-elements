@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Base.Utils;
 
 namespace Locators.PageObjects
 {
@@ -24,13 +25,21 @@ namespace Locators.PageObjects
 
         public CareersPage Open()
         {
+            Logger.Info($"Navigating to {URL}");
             this.webDriver.Navigate().GoToUrl(URL);
             return this;
         }
 
         public CareersUkrainePage GoToCareersUkrainePage()
         {
-            StartYourSearchHereElement.Click();
+            try
+            {
+                StartYourSearchHereElement.Click();
+            }
+            catch
+            {
+                ((IJavaScriptExecutor)webDriver).ExecuteScript("arguments[0].click();", StartYourSearchHereElement);
+            }
             return new CareersUkrainePage(this.webDriver);
         }
     }

@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using Base;
 using System.Diagnostics;
+using Base.Utils;
 using System.Linq;
 
 namespace Locators.PageObjects
@@ -39,7 +40,7 @@ namespace Locators.PageObjects
                 var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(30));
                 wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").ToString() == "complete");
             }
-            catch { }
+            catch (Exception ex) { Logger.Warn("Document ready state wait failed: " + ex.Message); }
             return this;
         }
 
@@ -51,6 +52,7 @@ namespace Locators.PageObjects
                 var e = driver.FindElement(careerLocator);
                 return (e.Displayed && e.Enabled) ? e : null;
             });
+            if (clickable == null) Logger.Warn("Careers link not found or not clickable on MainPage");
 
             // Scroll into view in case header layout or sticky elements cover it
             ((IJavaScriptExecutor)webDriver).ExecuteScript("arguments[0].scrollIntoView(true);", clickable);

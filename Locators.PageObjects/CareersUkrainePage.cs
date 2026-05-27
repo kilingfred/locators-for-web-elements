@@ -80,7 +80,28 @@ namespace Locators.PageObjects
             var input = CountryDropdownInputElement;
             try { input.Click(); } catch { }
             try { input.Clear(); } catch { }
-            input.SendKeys(country);
+
+            // Primary attempt: send keys normally
+            try
+            {
+                input.SendKeys(country);
+            }
+            catch (Exception)
+            {
+                // Fallback: set value via JS and trigger input event for React
+                try
+                {
+                    ((IJavaScriptExecutor)webDriver).ExecuteScript(
+                        "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input'));",
+                        input, country);
+                }
+                catch { }
+            }
+
+            // Try to explicitly open the dropdown via keyboard and click
+            try { input.Click(); } catch { }
+            try { input.SendKeys(Keys.ArrowDown); } catch { }
+            try { ((IJavaScriptExecutor)webDriver).ExecuteScript("arguments[0].dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown'}));", input); } catch { }
 
             var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
             wait.Until(d => d.FindElements(dropdownListLocator).Count > 0);
@@ -172,7 +193,7 @@ namespace Locators.PageObjects
                     waitBanner.Until(d => d.FindElements(By.Id("onetrust-banner-sdk")).All(e => !e.Displayed));
                 }
             }
-            catch { }
+            catch (Exception ex) { Base.Utils.Logger.Warn("Cookie close attempt failed: " + ex.Message); }
 
             var listLocator = By.XPath("//div[contains(@class,'List_list')]/div");
             var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
