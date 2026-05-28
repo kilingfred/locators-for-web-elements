@@ -40,6 +40,7 @@ namespace Base
 
                 _driver = _factory.GetDriver();
                 Logger.Info($"DriverSingleton created driver instance using {browser}");
+                _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
                 return _driver;
             }
         }

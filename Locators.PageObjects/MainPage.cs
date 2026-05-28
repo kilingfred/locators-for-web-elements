@@ -6,6 +6,7 @@ using Base;
 using System.Diagnostics;
 using Base.Utils;
 using System.Linq;
+using OpenQA.Selenium.Interactions;
 
 namespace Locators.PageObjects
 {
@@ -19,6 +20,8 @@ namespace Locators.PageObjects
         private By searchLocator = By.CssSelector("#wrapper > div.header-container.iparsys.parsys > div.header.section > header > div > div > ul > li:nth-child(3) > div > button");
         private By inputLocator = By.TagName("input");
         private By searchButtonLocator = By.CssSelector("#wrapper > div.header-container.iparsys.parsys > div.header.section > header > div > div > ul > li:nth-child(3) > div > div > form > div.search-results__action-section > button");
+        private By servicesLocator = By.LinkText("Services");
+        private By acceptCoockiesLocator = By.Id("onetrust-accept-btn-handler");
 
         public MainPage(IWebDriver webDriver)
         {
@@ -29,18 +32,16 @@ namespace Locators.PageObjects
         IWebElement SearchElement => this.webDriverWait.Until(driver => driver.FindElement(searchLocator));
         IWebElement InputElement => this.webDriverWait.Until(driver => driver.FindElement(inputLocator));
         IWebElement SearchButtonElement => this.webDriverWait.Until(driver => driver.FindElement(searchButtonLocator));
+        IWebElement ServicesElement => this.webDriverWait.Until(driver => driver.FindElement(servicesLocator));
+        IWebElement AcceptCookiesElement => this.webDriverWait.Until(driver => driver.FindElement(acceptCoockiesLocator));
+
         string Text { get; set; }
 
         public MainPage Open()
         {
             webDriver.Navigate().GoToUrl(URL);
-            // Wait for document ready state to reduce chance of interacting with not-ready elements
-            try
-            {
-                var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(30));
-                wait.Until(d => ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").ToString() == "complete");
-            }
-            catch (Exception ex) { Logger.Warn("Document ready state wait failed: " + ex.Message); }
+            Thread.Sleep(2000);
+            this.AcceptCookiesElement.Click();
             return this;
         }
 
@@ -108,6 +109,23 @@ namespace Locators.PageObjects
 
             this.Text = text;
             return this;
+        }
+
+        public MainPage HoverOnServices()
+        {
+            Actions actions = new Actions(this.webDriver);
+            actions.MoveToElement(ServicesElement).Perform();
+            webDriverWait.Until(driver => driver.FindElement(By.XPath("//*[@id=\"wrapper\"]/div[2]/div[1]/header/div/div/nav/ul/li[1]/div")));
+            return this;
+        }
+
+        public ArtificialIntelligencePage ClickOnService(string service)
+        {
+            var locator = By.LinkText(service.Trim());
+            IWebElement serviceElement = webDriverWait.Until(driver => driver.FindElement(locator));
+            string serviceText = serviceElement.Text;
+            serviceElement.Click();
+            return new ArtificialIntelligencePage(this.webDriver, serviceText);
         }
 
         public SearchPage ClickSearch()

@@ -12,62 +12,8 @@ using Base.Utils;
 
 namespace Locators.Tests
 {
-    public class Tests
+    public class Tests: BaseTest
     {
-        private IDriverFactory driverFactory;
-        private IWebDriver driver;
-
-        [SetUp]
-        public void Setup()
-        {
-            // Clear log file before each test run to keep logs short and per-test
-            Logger.Clear();
-
-            // create or reuse driver via DriverSingleton; factory selection is handled in Base
-            driver = DriverSingleton.GetDriver();
-            driverFactory = null; // not used when singleton chooses factory
-            Logger.Info("WebDriver instance created");
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            if (driver != null)
-            {
-                try
-                {
-                    try
-                    {
-                        driver.Quit();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error($"Error during driver.Quit(): {ex.Message}", ex);
-                    }
-
-                    try
-                    {
-                        driver.Dispose();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error($"Error during driver.Dispose(): {ex.Message}", ex);
-                    }
-
-                    DriverSingleton.CloseAndClear();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Error during DriverSingleton.CloseAndClear(): {ex.Message}", ex);
-                }
-                finally
-                {
-                    driver = null;
-                    driverFactory = null;
-                }
-            }
-        }
-
         // Test 1: Careers Ukraine search flow
         [TestCase("Java", "Bulgaria")]
         [TestCase("Python", "Ukraine")]
