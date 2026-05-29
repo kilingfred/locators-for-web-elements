@@ -112,18 +112,28 @@ namespace Locators.PageObjects
             {
                 var slides = d.FindElements(slideLocator);
 
-                return slides.FirstOrDefault(s =>
+                // Prefer the slide that actually exposes a visible "Read More" link.
+                // Using s.Text.Contains("Read More") is brittle because section headers
+                // or other elements may contain that text. Check for a visible link
+                // instead to reliably identify the active slide.
+                foreach (var s in slides)
                 {
                     try
                     {
-                        return s.Displayed
-                            && s.Text.Contains("Read More");
+                        if (!s.Displayed)
+                            continue;
+
+                        var readMoreLinks = s.FindElements(readMoreLocator);
+                        if (readMoreLinks.Any(l => l.Displayed && l.Enabled))
+                            return s;
                     }
                     catch
                     {
-                        return false;
+                        // ignore stale or detached elements
                     }
-                });
+                }
+
+                return null;
             });
         }
 

@@ -92,8 +92,8 @@ namespace Locators.Tests
         [Test]
         public void ValidateThatUserIsNotifiedIfResourceDoesNotExist()
         {
-            var users = _restClient.GetUsers();
-            //Assert.IsNull(getUsersResponse.ErrorException);
+            var users = _restClient.GetFromInvalidEndpoint();
+            //Assert.IsNull(users.ErrorException);
             Logger.Info("No errors occured");
             Assert.That(users.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }

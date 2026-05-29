@@ -41,5 +41,12 @@ namespace Base
             Logger.Info("Initiating POST on https://jsonplaceholder.typicode.com/users");
             return _restClient.ExecutePost<UserModel>(postUsersRequest);
         }
+
+        public RestResponse GetFromInvalidEndpoint()
+        {
+            var getRequest = new RestRequest("/invalidendpoint", Method.Get);
+            Logger.Info("Initiating Get on https://jsonplaceholder.typicode.com/invalidendpoint");
+            return _restClient.Execute(getRequest);
+        }
     }
 }
