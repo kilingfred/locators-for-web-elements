@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using OpenQA.Selenium;
 using Base.Utils;
+using Base.DriverFactories;
 
 namespace Base
 {

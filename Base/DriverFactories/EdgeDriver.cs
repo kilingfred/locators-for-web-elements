@@ -4,7 +4,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 using Base.Utils;
 
-namespace Base
+namespace Base.DriverFactories
 {
     public class EdgeDriverFactory : IDriverFactory
     {
