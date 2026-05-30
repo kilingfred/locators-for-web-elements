@@ -12,7 +12,7 @@ using Base.Utils;
 
 namespace Locators.Tests
 {
-    public class Tests: BaseTest
+    public class UITests: BaseTest
     {
         // Test 1: Careers Ukraine search flow
         [TestCase("Java", "Bulgaria")]

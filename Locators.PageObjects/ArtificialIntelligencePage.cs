@@ -29,7 +29,6 @@ namespace Locators.PageObjects
         {
             Logger.Info($"Opening {URL + Title}");
             this.webDriver.Navigate().GoToUrl(URL + Title.Replace(' ', '-').ToLower());
-            Thread.Sleep(3000);
             return this;
         }
 

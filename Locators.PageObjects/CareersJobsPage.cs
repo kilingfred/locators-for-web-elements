@@ -44,8 +44,6 @@ namespace Locators.PageObjects
         {
             webDriver.Navigate().GoToUrl(URL);
 
-            Thread.Sleep(2000);
-
             AcceptCookies();
 
             return this;
@@ -107,12 +105,8 @@ namespace Locators.PageObjects
 
             input.Click();
 
-            Thread.Sleep(500);
-
             // just type
             input.SendKeys(country);
-
-            Thread.Sleep(1000);
 
             var option = webDriverWait.Until(d =>
             {
@@ -128,8 +122,6 @@ namespace Locators.PageObjects
 
             ((IJavaScriptExecutor)webDriver)
                 .ExecuteScript("arguments[0].click();", option);
-
-            Thread.Sleep(2000);
 
             return this;
         }
@@ -279,8 +271,6 @@ namespace Locators.PageObjects
 
                 ((IJavaScriptExecutor)webDriver)
                     .ExecuteScript("arguments[0].click();", acceptButton);
-
-                Thread.Sleep(1000);
             }
             catch
             {

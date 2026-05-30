@@ -40,7 +40,6 @@ namespace Locators.PageObjects
         public MainPage Open()
         {
             webDriver.Navigate().GoToUrl(URL);
-            Thread.Sleep(2000);
             this.AcceptCookiesElement.Click();
             return this;
         }

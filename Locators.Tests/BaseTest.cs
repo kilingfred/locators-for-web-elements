@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Locators.Tests
 {
-    public partial class BaseTest
+    public abstract class BaseTest
     {
         protected IWebDriver driver;
 

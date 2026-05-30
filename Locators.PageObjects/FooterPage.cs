@@ -91,7 +91,6 @@ namespace Locators.PageObjects
                     }
                     catch { }
                 }
-                Thread.Sleep(500);
             }
             return false;
         }

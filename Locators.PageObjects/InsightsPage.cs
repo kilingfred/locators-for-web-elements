@@ -101,8 +101,6 @@ namespace Locators.PageObjects
                 });
 
                 nextBtn.Click();
-
-                Thread.Sleep(1000);
             }
         }
 

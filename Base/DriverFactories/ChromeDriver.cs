@@ -20,6 +20,14 @@ namespace Base.DriverFactories
             var options = new ChromeOptions();
             options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
             options.AddUserProfilePreference("download.prompt_for_download", false);
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
+            // Ensure a desktop-sized viewport in headless mode so responsive layout matches local runs
+            options.AddArgument("--window-size=1920,1080");
+            // Allow newer Chrome/Chromedriver combinations to work without remote origin errors on some CI images
+            options.AddArgument("--remote-allow-origins=*");
+            options.AddArgument("--headless");
+            options.AddArgument("--disable-gpu");
             options.AddUserProfilePreference("plugins.always_open_pdf_externally", true);
 
             driver = new OpenQA.Selenium.Chrome.ChromeDriver(options);
