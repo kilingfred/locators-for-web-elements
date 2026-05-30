@@ -14,6 +14,7 @@ using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext
 
 namespace Locators.Tests
 {
+    [Category("API")]
     public class ApiTests
     {
         private ApiClient _restClient = new ApiClient("https://jsonplaceholder.typicode.com/");

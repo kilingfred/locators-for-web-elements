@@ -26,22 +26,55 @@ namespace Locators.PageObjects
         public MainPage(IWebDriver webDriver)
         {
             this.webDriver = webDriver;
-            webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(3));
+            webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
         IWebElement SearchElement => this.webDriverWait.Until(driver => driver.FindElement(searchLocator));
         IWebElement InputElement => this.webDriverWait.Until(driver => driver.FindElement(inputLocator));
         IWebElement SearchButtonElement => this.webDriverWait.Until(driver => driver.FindElement(searchButtonLocator));
         IWebElement ServicesElement => this.webDriverWait.Until(driver => driver.FindElement(servicesLocator));
-        IWebElement AcceptCookiesElement => this.webDriverWait.Until(driver => driver.FindElement(acceptCoockiesLocator));
-
+        
         string Text { get; set; }
 
         public MainPage Open()
         {
             webDriver.Navigate().GoToUrl(URL);
-            this.AcceptCookiesElement.Click();
+
+            Logger.Info($"Title: {webDriver.Title}");
+            Logger.Info($"Url: {webDriver.Url}");
+
+            var source = webDriver.PageSource;
+
+            File.WriteAllText(
+                Path.Combine(AppContext.BaseDirectory, "page.html"),
+                source
+                );
+            
+            Logger.Info("Page source length: " + webDriver.PageSource.Length);
+
+            Logger.Info("Page loaded");
+
+            AcceptCookies();
             return this;
+        }
+
+        private void AcceptCookies()
+        {
+            try
+            {
+                var button = webDriver.FindElements(acceptCoockiesLocator)
+                    .FirstOrDefault(e => e.Displayed);
+
+                if (button != null)
+                {
+                    button.Click();
+                    Logger.Info("Cookie banner accepted");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"Unable to accept cookies: {ex.Message}");
+            }
         }
 
         public CareersPage GoToCareersPage()

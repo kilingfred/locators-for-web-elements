@@ -16,16 +16,10 @@ namespace Locators.PageObjects
         // Locators
         private By searchInputLocator = By.CssSelector("form input[type='search'], form input[type='text'], form input");
         private By countryDropdownInputLocator = By.CssSelector("[data-testid='country-dropdown'] input[id^='react-select']");
-        private By dropdownListLocator = By.CssSelector("[id^='react-select'] [role='option'], [class*='SingleOption']");
         private By remoteCheckboxLocator = By.Name("vacancy_type-Remote");
         private By lastJobFromListLocator = By.XPath("(//div[contains(@class,'List_list')]/div)[last()]");
         private By expandButtonLocator = By.CssSelector("div.AccordionSection_header__kp8GP svg, div.JobCard_accordionHeader__UXZ0z svg, span > svg");
         private By requirementsLocator = By.TagName("li");
-        private readonly By countryDropdownArrow =
-    By.XPath("//div[@data-testid='country-dropdown']//div[contains(@class,'dropdown__indicator')]");
-
-        private readonly By countryOptions =
-            By.CssSelector("div[role='option']");
 
         public CareersJobsPage(IWebDriver driver)
         {
@@ -33,9 +27,7 @@ namespace Locators.PageObjects
             this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
-        // Native Selenium 4 Waits for Elements
         private IWebElement SearchInputElement => webDriverWait.Until(d => d.FindElement(searchInputLocator));
-        private IWebElement CountryDropdownInputElement => webDriverWait.Until(d => d.FindElement(countryDropdownInputLocator));
         private IWebElement LastJobFromListElement => webDriverWait.Until(d => d.FindElement(lastJobFromListLocator));
 
         private string SearchText { get; set; }

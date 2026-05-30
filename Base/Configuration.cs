@@ -1,26 +1,34 @@
-﻿using Microsoft.Extensions.Configuration.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 
-namespace Base
+public static class Configuration
 {
-    internal class Configuration
+    private static readonly JsonDocument Settings;
+
+    static Configuration()
     {
-        public static string Browser { get; set; }
+        var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
 
-        public static string DownloadDirectory { get; set; }
-
-        public Configuration()
+        if (File.Exists(path))
         {
-            JsonConfigurationProvider jsonConfigurationProvider = new JsonConfigurationProvider(new JsonConfigurationSource());
-            
-            DownloadDirectory = Path.Combine(Path.GetTempPath(), "epam_downloads", Guid.NewGuid().ToString());
-            Directory.CreateDirectory(DownloadDirectory);
-
-            jsonConfigurationProvider.TryGet("browser", out var browser);
-            Browser = browser;
+            Settings = JsonDocument.Parse(File.ReadAllText(path));
         }
+    }
+
+    public static string Browser =>
+        Environment.GetEnvironmentVariable("BROWSER")
+        ?? GetString("browser")
+        ?? "chrome";
+
+    public static bool Headless =>
+        bool.TryParse(GetString("Headless"), out var result) && result;
+
+    private static string? GetString(string key)
+    {
+        if (Settings == null)
+            return null;
+
+        return Settings.RootElement.TryGetProperty(key, out var value)
+            ? value.ToString()
+            : null;
     }
 }

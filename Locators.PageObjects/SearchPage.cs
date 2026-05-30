@@ -20,7 +20,7 @@ namespace Locators.PageObjects
         {
             this.queryText = queryText;
             this.webDriver = webDriver;
-            webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(3));
+            webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
         private IWebElement SearchResultsElement => webDriverWait.Until(driver => driver.FindElement(searchResultsLocator));

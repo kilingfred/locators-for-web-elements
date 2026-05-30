@@ -110,13 +110,13 @@ namespace Locators.Tests.Features
         
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Navigate to Services by heading")]
-        [global::NUnit.Framework.CategoryAttribute("tag1")]
+        [global::NUnit.Framework.CategoryAttribute("UI")]
         [global::NUnit.Framework.TestCaseAttribute("Generative AI", "0", null)]
         [global::NUnit.Framework.TestCaseAttribute("Responsible AI", "1", null)]
         public async global::System.Threading.Tasks.Task NavigateToServicesByHeading(string heading, string @__pickleIndex, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "tag1"};
+                    "UI"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

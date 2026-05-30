@@ -2,7 +2,7 @@
 As a anonymous visitor
 I want to review Services
 
-@tag1
+@UI
 Scenario Outline: Navigate to Services by heading
    Given I am on Main Page
    When I hover over Services

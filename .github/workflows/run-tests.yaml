@@ -5,7 +5,16 @@ on:
     branches: [ master ]
   schedule:
     - cron: '0 19 * * *'
-  workflow_dispatch: {}
+  workflow_dispatch: 
+   inputs:
+    browser:
+      description: Browser for UI tests
+      required: true
+      default: chrome
+      type: choice
+      options:
+        - chrome
+        - edge
 
 jobs:
   api-tests:
@@ -20,21 +29,35 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Verify Chrome
+        run: |
+          google-chrome --version
+
+      - name: Install Edge
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list'
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
+
       - name: Restore
         run: dotnet restore
 
       - name: Run API tests
-        # assumes API tests emit results to the folder specified below
         run: |
-          mkdir -p test-results/api
-          dotnet test --logger "trx;LogFileName=api-test-results.trx" --results-directory test-results/api
+          mkdir -p TestResults/API
+          dotnet test \
+            --filter "Category=API" \
+            --results-directory TestResults/API \
+            --logger "trx;LogFileName=api.trx"
 
       - name: Upload API test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-results
-          path: test-results/api
+          path: TestResults/API
 
   ui-tests:
     name: UI Tests
@@ -51,29 +74,33 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install Chrome and dependencies
+      - name: Verify Chrome
         run: |
+          google-chrome --version
+
+      - name: Install Edge
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list'
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4
-          sudo apt-get install -y google-chrome-stable
-          google-chrome --version || true
+          sudo apt-get install -y microsoft-edge-stable
 
       - name: Restore
         run: dotnet restore
 
       - name: Run UI tests
-        continue-on-error: false
         run: |
-          mkdir -p test-results/ui screenshots
-          # run UI tests and collect trx results; adjust filter if projects separate
-          dotnet test --logger "trx;LogFileName=ui-test-results.trx" --results-directory test-results/ui
+          mkdir -p TestResults/UI
+          dotnet test \
+            --filter "Category=UI" \
+            --results-directory TestResults/UI \
+            --logger "trx;LogFileName=ui.trx"
 
-      - name: Upload UI test results and screenshots
+      - name: Upload UI test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-artifacts
-          path: |
-            test-results/ui
-            screenshots
+          name: ui-test-results
+          path: TestResults/UI
 

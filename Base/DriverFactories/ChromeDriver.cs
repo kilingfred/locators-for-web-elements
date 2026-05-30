@@ -26,12 +26,26 @@ namespace Base.DriverFactories
             options.AddArgument("--window-size=1920,1080");
             // Allow newer Chrome/Chromedriver combinations to work without remote origin errors on some CI images
             options.AddArgument("--remote-allow-origins=*");
-            options.AddArgument("--headless");
+            if (Configuration.Headless)
+            {
+                options.AddArgument("--headless=new");
+            }
             options.AddArgument("--disable-gpu");
             options.AddUserProfilePreference("plugins.always_open_pdf_externally", true);
 
-            driver = new OpenQA.Selenium.Chrome.ChromeDriver(options);
-            driver.Manage().Window.Maximize();
+            var service = ChromeDriverService.CreateDefaultService();
+
+            service.EnableVerboseLogging = true;
+            service.LogPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "chromedriver.log");
+
+            driver = new ChromeDriver(service, options);
+            
+            if (!Configuration.Headless)
+            {
+                driver.Manage().Window.Maximize();
+            }
             Base.Utils.Logger.Info("ChromeDriver started");
             return driver;
         }

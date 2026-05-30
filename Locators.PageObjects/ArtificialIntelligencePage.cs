@@ -22,7 +22,7 @@ namespace Locators.PageObjects
         {
             this.webDriver = webDriver;
             this.Title = title;
-            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(5));
+            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
         public ArtificialIntelligencePage Open()

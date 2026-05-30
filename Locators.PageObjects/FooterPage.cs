@@ -72,29 +72,6 @@ namespace Locators.PageObjects
             try { link.Click(); } catch { ((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", link); }
         }
 
-        public bool WaitForFileCreatedAndStable(string path, TimeSpan timeout)
-        {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            long lastSize = -1;
-            while (sw.Elapsed < timeout)
-            {
-                if (File.Exists(path))
-                {
-                    try
-                    {
-                        var fi = new FileInfo(path);
-                        if (fi.Length > 0 && fi.Length == lastSize)
-                        {
-                            return true;
-                        }
-                        lastSize = fi.Length;
-                    }
-                    catch { }
-                }
-            }
-            return false;
-        }
-
         public void ClickCodeOfConductLink()
         {
             var link = FindCodeOfConductLink();

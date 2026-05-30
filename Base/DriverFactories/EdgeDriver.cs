@@ -20,9 +20,19 @@ namespace Base.DriverFactories
             var options = new EdgeOptions();
             options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
             options.AddUserProfilePreference("download.prompt_for_download", false);
+            if (!Configuration.Headless)
+            {
+                driver.Manage().Window.Maximize();
+            }
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--window-size=1920,1080");
 
             driver = new OpenQA.Selenium.Edge.EdgeDriver(options);
-            driver.Manage().Window.Maximize();
+            if (!Configuration.Headless)
+            {
+                driver.Manage().Window.Maximize();
+            }
             Logger.Info("EdgeDriver started");
             return driver;
         }

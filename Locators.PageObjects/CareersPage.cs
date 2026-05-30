@@ -18,7 +18,7 @@ namespace Locators.PageObjects
         public CareersPage(IWebDriver driver)
         {
             this.webDriver = driver;
-            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(3));
+            this.webDriverWait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
         }
 
         private IWebElement StartYourSearchHereElement => this.webDriverWait.Until(driver => driver.FindElement(StartYourSearchHereButtonLocator));

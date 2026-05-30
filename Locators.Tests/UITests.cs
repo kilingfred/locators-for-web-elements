@@ -12,6 +12,7 @@ using Base.Utils;
 
 namespace Locators.Tests
 {
+    [Category("UI")]
     public class UITests: BaseTest
     {
         // Test 1: Careers Ukraine search flow
